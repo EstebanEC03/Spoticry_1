@@ -1,0 +1,16 @@
+/* Tailwind via CDN handles utilities. Local globals only. */
+:root {
+  color-scheme: dark;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: #131313;
+  color: #e5e2e1;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+input[type='range'] {
+  accent-color: #8B5CF6;
+}

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SpotiCry</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              background: '#131313',
+              surface: '#131313',
+              'surface-dim': '#131313',
+              'surface-bright': '#393939',
+              'surface-container-lowest': '#0e0e0e',
+              'surface-container-low': '#1c1b1b',
+              'surface-container': '#201f1f',
+              'surface-container-high': '#2a2a2a',
+              'surface-container-highest': '#353534',
+              'on-surface': '#e5e2e1',
+              'on-surface-variant': '#cbc3d7',
+              outline: '#958ea0',
+              'outline-variant': '#494454',
+              primary: '#d0bcff',
+              'on-primary': '#3c0091',
+              'inverse-primary': '#6d3bd7',
+              secondary: '#4cd7f6',
+              'on-secondary': '#003640',
+              error: '#ffb4ab',
+              accent: '#8B5CF6',
+              'accent-blue': '#06B6D4',
+            },
+            borderRadius: {
+              DEFAULT: '0.5rem',
+              sm: '0.25rem',
+              md: '0.75rem',
+              lg: '1rem',
+              xl: '1.5rem',
+              full: '9999px',
+            },
+            spacing: {
+              gutter: '1.5rem',
+              'player-height': '96px',
+              'sidebar-width': '280px',
+            },
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+            },
+            fontSize: {
+              'display-lg': ['48px', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '800' }],
+              'headline-md': ['24px', { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }],
+              'body-base': ['16px', { lineHeight: '1.5', fontWeight: '400' }],
+              'label-sm': ['12px', { lineHeight: '1', letterSpacing: '0.05em', fontWeight: '600' }],
+            },
+          },
+        },
+      };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <style>
+      body { font-family: 'Inter', system-ui, sans-serif; }
+      .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+      .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #353534; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #494454; }
+    </style>
+  </head>
+  <body class="bg-background text-on-surface overflow-hidden h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
