@@ -1,15 +1,5 @@
 [
   {
-    "id": "4f42dde32ea042898bd09e7d8f865c40",
-    "title": "The Epic Hero",
-    "artist": "Keys of Moon",
-    "genre": "Cinematic",
-    "duration_sec": 179,
-    "bitrate": 320142,
-    "added_at": "2026-04-25T21:15:32.537362777Z",
-    "path": "/home/noisa/Documents/Universidad/Lenguajes/Proyectos/spoticry/backend/songs/Keys Of Moon - The Epic Hero.mp3"
-  },
-  {
     "id": "b846f95cc32e4475917f8bac8698765d",
     "title": "Scott Buckley - Filaments",
     "artist": "Unknown",
@@ -28,5 +18,15 @@
     "bitrate": 192789,
     "added_at": "2026-04-25T21:14:30.433826626Z",
     "path": "/home/noisa/Documents/Universidad/Lenguajes/Proyectos/spoticry/backend/songs/Makai Symphony - Dragon Castle.mp3"
+  },
+  {
+    "id": "4f42dde32ea042898bd09e7d8f865c40",
+    "title": "The Epic Hero",
+    "artist": "Keys of Moon",
+    "genre": "Cinematic",
+    "duration_sec": 179,
+    "bitrate": 320142,
+    "added_at": "2026-04-25T21:15:32.537362777Z",
+    "path": "/home/noisa/Documents/Universidad/Lenguajes/Proyectos/spoticry/backend/songs/Keys Of Moon - The Epic Hero.mp3"
   }
 ]
