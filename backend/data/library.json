@@ -7,7 +7,7 @@
     "duration_sec": 340,
     "bitrate": 192168,
     "added_at": "2026-04-26T21:00:42.041569501Z",
-    "path": "/home/noisa/Documents/Universidad/Lenguajes/Proyectos/spoticry/backend/songs/Scott Buckley - Filaments.mp3"
+    "path": "Scott Buckley - Filaments.mp3"
   },
   {
     "id": "8c4bd471a5374921aea7886bd0273400",
@@ -17,7 +17,7 @@
     "duration_sec": 162,
     "bitrate": 192789,
     "added_at": "2026-04-25T21:14:30.433826626Z",
-    "path": "/home/noisa/Documents/Universidad/Lenguajes/Proyectos/spoticry/backend/songs/Makai Symphony - Dragon Castle.mp3"
+    "path": "Makai Symphony - Dragon Castle.mp3"
   },
   {
     "id": "4f42dde32ea042898bd09e7d8f865c40",
@@ -27,6 +27,6 @@
     "duration_sec": 179,
     "bitrate": 320142,
     "added_at": "2026-04-25T21:15:32.537362777Z",
-    "path": "/home/noisa/Documents/Universidad/Lenguajes/Proyectos/spoticry/backend/songs/Keys Of Moon - The Epic Hero.mp3"
+    "path": "Keys Of Moon - The Epic Hero.mp3"
   }
 ]

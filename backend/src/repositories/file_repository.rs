@@ -5,13 +5,23 @@
 use std::collections::HashMap;
 use std::fs;
 use std::io;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::domain::playlist::{Playlist, PlaylistId};
 use crate::domain::song::{Song, SongId};
 
 pub fn load_library<P: AsRef<Path>>(path: P) -> io::Result<HashMap<SongId, Song>> {
-    load_map(path, |s: Song| (s.id.clone(), s))
+    load_map(path, |mut s: Song| {
+        // Legacy snapshots stored absolute paths (e.g. /home/.../songs/foo.mp3),
+        // which Windows can't open. Reduce to filename-only so the runtime
+        // resolver can join it against songs_dir on any OS.
+        s.path = s
+            .path
+            .file_name()
+            .map(PathBuf::from)
+            .unwrap_or(s.path);
+        (s.id.clone(), s)
+    })
 }
 
 pub fn save_library<P: AsRef<Path>>(

@@ -2,7 +2,7 @@
 // Pure search/filter helpers stay folded in here too; keeping them next to the
 // state access avoids needless type ceremony at the controller layer.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use chrono::Utc;
 use symphonia::core::formats::FormatOptions;
@@ -119,16 +119,6 @@ pub fn add_from_path(
         .canonicalize()
         .map_err(|e| AppError::new(ErrorCode::FileNotFound, format!("Cannot canonicalize: {e}")))?;
 
-    {
-        let lib = state.library.read().map_err(|_| pois("library"))?;
-        if lib.values().any(|s| s.path == canonical) {
-            return Err(AppError::new(
-                ErrorCode::DuplicateSong,
-                "Song already in library",
-            ));
-        }
-    }
-
     // Strict: file must be a decodable MP3 stream. Symphonia's probe doubles
     // as content validation — extension alone (is_mp3) doesn't catch a JPG
     // renamed to .mp3, but the demuxer does.
@@ -145,6 +135,21 @@ pub fn add_from_path(
         )
     })?;
     let file_size = std::fs::metadata(&canonical).map(|m| m.len()).unwrap_or(0);
+
+    // Materialise into songs_dir so the library entry only ever has to remember
+    // a filename — portable across operating systems and across machines that
+    // share the JSON snapshot.
+    let stored_filename = import_into_songs_dir(&canonical, &state.songs_dir)?;
+
+    {
+        let lib = state.library.read().map_err(|_| pois("library"))?;
+        if lib.values().any(|s| s.path == stored_filename) {
+            return Err(AppError::new(
+                ErrorCode::DuplicateSong,
+                "Song already in library",
+            ));
+        }
+    }
     let bitrate = if duration_sec > 0 {
         (file_size * 8 / duration_sec as u64) as u32
     } else {
@@ -177,7 +182,7 @@ pub fn add_from_path(
         duration_sec,
         bitrate,
         added_at: Utc::now(),
-        path: canonical,
+        path: stored_filename,
     };
 
     let song = {
@@ -238,6 +243,46 @@ pub fn remove_song(state: &AppState, song_id: &SongId) -> Result<Song, AppError>
 }
 
 // --- Helpers --------------------------------------------------------------
+
+// Copies `source` into `songs_dir` if it is not already there, and returns
+// the filename-only path that should be persisted in the library. If the file
+// already lives inside `songs_dir`, no copy happens. Collisions with a
+// different file are reported as DuplicateSong.
+fn import_into_songs_dir(source: &Path, songs_dir: &Path) -> Result<PathBuf, AppError> {
+    let filename = source
+        .file_name()
+        .ok_or_else(|| AppError::new(ErrorCode::UnsupportedFormat, "Source has no filename"))?
+        .to_owned();
+    if let Err(e) = std::fs::create_dir_all(songs_dir) {
+        return Err(AppError::new(
+            ErrorCode::ServerError,
+            format!("Cannot create songs_dir {}: {e}", songs_dir.display()),
+        ));
+    }
+    let dest = songs_dir.join(&filename);
+
+    let already_inside = dest
+        .canonicalize()
+        .ok()
+        .map(|d| d == source)
+        .unwrap_or(false);
+
+    if !already_inside {
+        if dest.exists() {
+            return Err(AppError::new(
+                ErrorCode::DuplicateSong,
+                format!("A different file named {} already exists in songs_dir", filename.to_string_lossy()),
+            ));
+        }
+        std::fs::copy(source, &dest).map_err(|e| {
+            AppError::new(
+                ErrorCode::ServerError,
+                format!("Cannot copy into songs_dir: {e}"),
+            )
+        })?;
+    }
+    Ok(PathBuf::from(filename))
+}
 
 fn is_mp3(path: &Path) -> bool {
     path.extension()

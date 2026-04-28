@@ -16,21 +16,34 @@ use crate::states::app_state::AppState;
 const BIND_ADDR: &str = "0.0.0.0:7878";
 const LIBRARY_PATH: &str = "./data/library.json";
 const PLAYLISTS_PATH: &str = "./data/playlists.json";
+const SONGS_DIR: &str = "./songs";
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     let library_path = PathBuf::from(LIBRARY_PATH);
     let playlists_path = PathBuf::from(PLAYLISTS_PATH);
+    // Songs live under a portable, OS-agnostic directory. Override with the
+    // SPOTICRY_SONGS_DIR env var; otherwise default to `./songs` next to the
+    // working directory the binary was launched in. Library entries store
+    // filenames only — paths get resolved against this directory at stream
+    // time, so the same library.json is portable across Linux and Windows.
+    let songs_dir = PathBuf::from(
+        std::env::var("SPOTICRY_SONGS_DIR").unwrap_or_else(|_| SONGS_DIR.to_string()),
+    );
+    if let Err(e) = std::fs::create_dir_all(&songs_dir) {
+        eprintln!("WARN  could not create songs_dir {}: {e}", songs_dir.display());
+    }
 
     let library = file_repository::load_library(&library_path)?;
     let playlists = file_repository::load_playlists(&playlists_path)?;
     println!(
-        "loaded {} songs, {} playlists from disk",
+        "loaded {} songs, {} playlists from disk (songs_dir={})",
         library.len(),
-        playlists.len()
+        playlists.len(),
+        songs_dir.display()
     );
 
-    let state = AppState::with_data(library, playlists, library_path, playlists_path);
+    let state = AppState::with_data(library, playlists, library_path, playlists_path, songs_dir);
     let server_state = state.clone();
     let cli_state = state.clone();
 

@@ -58,14 +58,15 @@ pub fn play_song(state: &AppState, req_id: String, song_id: SongId) -> PlayResul
         Ok(s) => s,
         Err(e) => return PlayResult::Err(err(req_id, "PLAY_SONG", e)),
     };
-    let total_bytes = match std::fs::metadata(&song.path) {
+    let resolved_path = state.resolve_song_path(&song.path);
+    let total_bytes = match std::fs::metadata(&resolved_path) {
         Ok(m) => m.len(),
-        Err(_) => {
+        Err(e) => {
             return PlayResult::Err(Response::err(
                 req_id,
                 "PLAY_SONG",
                 ErrorCode::ServerError,
-                "Cannot read song file",
+                format!("Cannot read song file {}: {e}", resolved_path.display()),
             ));
         }
     };
@@ -94,7 +95,7 @@ pub fn play_song(state: &AppState, req_id: String, song_id: SongId) -> PlayResul
     PlayResult::Ack {
         response,
         stream_id,
-        path: song.path,
+        path: resolved_path,
         cancel_rx,
     }
 }

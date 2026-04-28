@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, RwLock};
 
 use serde::Serialize;
@@ -40,6 +40,7 @@ pub struct AppState {
     pub notifications: broadcast::Sender<Notification>,
     pub library_path: Arc<PathBuf>,
     pub playlists_path: Arc<PathBuf>,
+    pub songs_dir: Arc<PathBuf>,
 }
 
 impl AppState {
@@ -49,6 +50,7 @@ impl AppState {
             HashMap::new(),
             PathBuf::new(),
             PathBuf::new(),
+            PathBuf::from("./songs"),
         )
     }
 
@@ -57,6 +59,7 @@ impl AppState {
         playlists: HashMap<PlaylistId, Playlist>,
         library_path: PathBuf,
         playlists_path: PathBuf,
+        songs_dir: PathBuf,
     ) -> Self {
         let (tx, _) = broadcast::channel(NOTIFICATION_BUFFER);
         Self {
@@ -66,7 +69,19 @@ impl AppState {
             notifications: tx,
             library_path: Arc::new(library_path),
             playlists_path: Arc::new(playlists_path),
+            songs_dir: Arc::new(songs_dir),
         }
+    }
+
+    // Library stores filenames; pumps need the real on-disk path. Strip any
+    // stray directory components from the stored value so legacy entries with
+    // absolute Linux paths still resolve correctly on Windows.
+    pub fn resolve_song_path(&self, stored: &Path) -> PathBuf {
+        let name = stored
+            .file_name()
+            .map(PathBuf::from)
+            .unwrap_or_else(|| stored.to_path_buf());
+        self.songs_dir.join(name)
     }
 
     pub fn persist_library(&self) {
